@@ -1,4 +1,3 @@
-
 import rateLimit from "next-rate-limit"
 import { NextRequest, NextResponse } from "next/server"
 import { getClient } from "@/lib/mongodb"
@@ -17,10 +16,14 @@ export async function GET(request: NextRequest) {
 
     const url = new URL(request.url)
     const limit = Math.min(parseInt(url.searchParams.get("limit") || "60", 10), 360)
+    const hostname = url.searchParams.get("hostname")?.trim() || "heweyDeb"
+    if (!/^[a-zA-Z0-9.-]{1,64}$/.test(hostname)) {
+      return NextResponse.json({ error: "Invalid hostname" }, { status: 400 })
+    }
     const client = await getClient()
     const db = client.db("Metrics")
     const coll = db.collection("hardwareMin")
-    const docs = await coll.find({"metadata.hostname": "heweyDeb"}).sort({ timestamp: -1 }).limit(limit).toArray()
+    const docs = await coll.find({"metadata.hostname": hostname}).sort({ timestamp: -1 }).limit(limit).toArray()
 
     // Prepare 4 arrays for each metric
     type MetricPoint = { ts: number | null, value: number }

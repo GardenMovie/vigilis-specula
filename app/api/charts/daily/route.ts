@@ -18,10 +18,14 @@ export async function GET(request: NextRequest) {
 
     const url = new URL(request.url)
     const limit = Math.min(parseInt(url.searchParams.get("limit") || "30", 10), 90)
+    const hostname = url.searchParams.get("hostname")?.trim() || "heweyDeb";
+    if (!/^[a-zA-Z0-9.-]{1,64}$/.test(hostname)) {
+      return NextResponse.json({ error: "Invalid hostname" }, { status: 400 });
+    }
     const client = await getClient()
     const db = client.db("Metrics")
     const coll = db.collection("hardwareDay")
-    const docs = await coll.find({"metadata.hostname": "heweyDeb"}).sort({ timestamp: -1 }).limit(limit).toArray()
+    const docs = await coll.find({"metadata.hostname": hostname}).sort({ timestamp: -1 }).limit(limit).toArray()
 
     const result = docs.map((d: any) => {
       const ts = d.timestamp
