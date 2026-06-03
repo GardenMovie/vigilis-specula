@@ -4,15 +4,26 @@ import TooMany429 from "../shared/errors/tooMany429"
 import { useHostname } from "../shared/hostnameProvider"
 import { Monitor, MemoryStick, HardDrive, Cpu, Gpu, ArrowLeftRight } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 const HOSTS = ["heweyDeb", "bob-arch"]
 
 
-let specsCache: specsData | null = null
-let specsCacheUpdatedAt = 0
-let specsCachedHostname = ""
 const SPECS_CACHE_MAX_AGE_MS = 60 * 60 * 1000 * 24 * 10
+
+function readSpecsCache(hostname: string): { data: specsData; updatedAt: number } | null {
+  try {
+    const raw = localStorage.getItem(`specs_cache_${hostname}`)
+    if (!raw) return null
+    return JSON.parse(raw)
+  } catch { return null }
+}
+
+function writeSpecsCache(hostname: string, data: specsData) {
+  try {
+    localStorage.setItem(`specs_cache_${hostname}`, JSON.stringify({ data, updatedAt: Date.now() }))
+  } catch {}
+}
 
 type specsData = {
   hostname: string
@@ -30,8 +41,9 @@ export function Specs() {
   const [switcherOpen, setSwitcherOpen] = useState(false)
 
   useEffect(() => {
-    if (hostname !== specsCachedHostname) {
-      specsCache = null
+    const cached = readSpecsCache(hostname)
+    if (cached) {
+      setData(cached.data)
     }
 
     const fetchSpecs = () => {
@@ -52,18 +64,15 @@ export function Specs() {
             ram: data[0]?.ram + " GB" || "Unknown RAM",
             disk: data[0]?.disk + " GB" || "Unknown Disk"
           }
-          specsCache = specs
-          specsCacheUpdatedAt = Date.now()
-          specsCachedHostname = hostname
+          writeSpecsCache(hostname, specs)
           setData(specs)
-        }
-        )
+        })
     }
-    const shouldFetch = !specsCache || Date.now() - specsCacheUpdatedAt >= SPECS_CACHE_MAX_AGE_MS
+    const shouldFetch = !cached || Date.now() - cached.updatedAt >= SPECS_CACHE_MAX_AGE_MS
     if (shouldFetch) {
       fetchSpecs()
     }
-  })
+  }, [hostname])
 
   return (
     <div className="w-full aspect-5/1:md mb-6 grid md:grid-cols-3 gap-3">
@@ -79,6 +88,7 @@ export function Specs() {
         <DialogContent showCloseButton={false}>
           <DialogHeader>
             <DialogTitle className="text-center">Switch host</DialogTitle>
+            <DialogDescription className="text-center">Select a host to view its stats</DialogDescription>
           </DialogHeader>
           <div className="flex flex-row gap-3">
             {HOSTS.map(h => (
