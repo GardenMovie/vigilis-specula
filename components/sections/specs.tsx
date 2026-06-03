@@ -20,19 +20,18 @@ type specsData = {
 
 export function Specs() {
 
-const [rateLimitError, setRateLimitError] = useState(false)
-const [data, setData] = useState<any>(null)
+  const [rateLimitError, setRateLimitError] = useState(false)
+  const [data, setData] = useState<any>(null)
 
-useEffect(() => {
-  //if (specsCache) {
-  //  setData(specsCache)
-  //}
+  useEffect(() => {
+    //if (specsCache) {
+    //  setData(specsCache)
+    //}
 
-  const fetchSpecs = () => {
-    fetch("/api/hosts?hostname=hewey-deb")
-      .then(res => res.json())
-      .then(data => {
-          console.log(Object.keys(data[0]));
+    const fetchSpecs = () => {
+      fetch("/api/hosts?hostname=hewey-deb")
+        .then(res => res.json())
+        .then(data => {
           if (data && typeof data === "object" && data.error === "Rate limit exceeded") {
             setRateLimitError(true)
             setData(null)
@@ -50,41 +49,48 @@ useEffect(() => {
           specsCache = specs
           specsCacheUpdatedAt = Date.now()
           setData(specs)
-          }
-      )
-  }
-  const shouldFetch = !specsCache || Date.now() - specsCacheUpdatedAt >= SPECS_CACHE_MAX_AGE_MS
-  if (shouldFetch) {
-    fetchSpecs()
-  }
-})
+        }
+        )
+    }
+    const shouldFetch = !specsCache || Date.now() - specsCacheUpdatedAt >= SPECS_CACHE_MAX_AGE_MS
+    if (shouldFetch) {
+      fetchSpecs()
+    }
+  })
 
   return (
-    <Card className="w-full mb-6">
-      <CardContent className="flex justify-between items-center py-6">
-        <div className="flex flex-col items-center flex-1">
+    <div className="w-full aspect-5/1:md mb-6 grid md:grid-cols-3 gap-3">
+      <Card className="col-span-2 row-span-1 md:col-span-1 md:row-span-2">
+        <CardContent className="flex flex-col items-center flex-1 justify-center">
           <Monitor className="w-8 h-8 mb-1 text-blue-600" />
           <span className="font-semibold text-zinc-800 dark:text-zinc-100 text-center">{data?.hostname}</span>
-        </div>
-        <div className="grid items-center ">
-          <div className="flex flex-col items-center flex-1">
-            <Cpu className="w-8 h-8 mb-1 text-lime-600" />
-            <span className="font-semibold text-zinc-800 dark:text-zinc-100 text-center">{data?.cpu}</span>
-          </div>
-          <div className="flex flex-col items-center flex-1">
-            <Gpu className="w-8 h-8 mb-1 text-orange-600" />
-            <span className="font-semibold text-zinc-800 dark:text-zinc-100 text-center">{data?.gpu}</span>
-          </div>
-          <div className="flex flex-col items-center flex-1">
-            <MemoryStick className="w-8 h-8 mb-1 text-amber-500" />
-            <span className="font-semibold text-zinc-800 dark:text-zinc-100 text-center">{data?.ram}</span>
-          </div>
-          <div className="flex flex-col items-center flex-1">
-            <HardDrive className="w-8 h-8 mb-1 text-emerald-600" />
-            <span className="font-semibold text-zinc-800 dark:text-zinc-100 text-center">{data?.disk}</span>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+
+      <Card className="">
+        <CardContent className="flex flex-col items-center flex-1 justify-center">
+          <Cpu className="w-8 h-8 mb-1 text-green-600" />
+          <span className="font-semibold text-zinc-800 dark:text-zinc-100 text-center">{data?.cpu}</span>
+        </CardContent>
+      </Card>
+      <Card className="">
+        <CardContent className="flex flex-col items-center flex-1 justify-center">
+          <Gpu className="w-8 h-8 mb-1 text-red-600" />
+          <span className="font-semibold text-zinc-800 dark:text-zinc-100 text-center">{data?.gpu}</span>
+        </CardContent>
+      </Card>
+      <Card className="">
+        <CardContent className="flex flex-col items-center flex-1 justify-center">
+          <MemoryStick className="w-8 h-8 mb-1 text-amber-600" />
+          <span className="font-semibold text-zinc-800 dark:text-zinc-100 text-center">{data?.ram}</span>
+        </CardContent>
+      </Card>
+      <Card className="">
+        <CardContent className="flex flex-col items-center flex-1 justify-center">
+          <HardDrive className="w-8 h-8 mb-1 text-emerald-600" />
+          <span className="font-semibold text-zinc-800 dark:text-zinc-100 text-center">{data?.disk}</span>
+        </CardContent>
+      </Card>
+    </div>
   )
 }

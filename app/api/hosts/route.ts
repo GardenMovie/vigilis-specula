@@ -4,7 +4,7 @@ import { getClient } from "@/lib/mongodb"
 
 
 // Centralized rate limit per user (requests per interval)
-const RATE_LIMIT_PER_USER = 10
+const RATE_LIMIT_PER_USER = 1000
 
 const limiter = rateLimit({
   interval: 60 * 1000, // 1 minute
