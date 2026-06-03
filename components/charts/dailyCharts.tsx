@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import LineChartClient from "./multiLineChart"
 import TooMany429 from "@/components/shared/errors/tooMany429"
+import { useHostname } from "@/components/shared/hostnameProvider"
 
 export const description = "A multiple line chart for daily data"
 
@@ -21,20 +22,25 @@ type DailyData = {
 
 let dailyCache: DailyData | null = null
 let dailyCacheUpdatedAt = 0
+let dailyCachedHostname = ""
 const DAILY_CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000
 
 
 export function DailyCharts() {
+  const { hostname } = useHostname()
   const [chartData, setChartData] = useState<DailyData | null>(null)
   const [rateLimitError, setRateLimitError] = useState(false)
 
   useEffect(() => {
+    if (hostname !== dailyCachedHostname) {
+      dailyCache = null
+    }
     if (dailyCache) {
       setChartData(dailyCache)
     }
 
     const fetchData = () => {
-      fetch("/api/charts/daily?limit=30")
+      fetch(`/api/charts/daily?limit=30&hostname=${hostname}`)
         .then(res => res.json())
         .then((data) => {
           if (data && typeof data === "object" && data.error === "Rate limit exceeded") {
@@ -59,6 +65,7 @@ export function DailyCharts() {
           })
           dailyCache = metrics
           dailyCacheUpdatedAt = Date.now()
+          dailyCachedHostname = hostname
           setChartData(metrics)
         })
     }
@@ -68,7 +75,7 @@ export function DailyCharts() {
     }
     const interval = setInterval(fetchData, 60000 * 60 * 24)
     return () => clearInterval(interval)
-  }, [])
+  }, [hostname])
 
   if (rateLimitError) {
     return <TooMany429 />

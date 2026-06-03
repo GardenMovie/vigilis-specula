@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import SingleLineChart from "./singleLineChart"
 import TooMany429 from "@/components/shared/errors/tooMany429"
+import { useHostname } from "@/components/shared/hostnameProvider"
 
 export const description = "A multiple line chart"
 
@@ -16,19 +17,24 @@ type MinutelyData = {
 
 let minutelyCache: MinutelyData | null = null
 let minutelyCacheUpdatedAt = 0
+let minutelyCachedHostname = ""
 const CACHE_MAX_AGE_MS = 60 * 1000
 
 export function MinutelyCharts() {
+  const { hostname } = useHostname()
   const [chartData, setChartData] = useState<MinutelyData | null>(null)
   const [rateLimitError, setRateLimitError] = useState(false)
 
   useEffect(() => {
+    if (hostname !== minutelyCachedHostname) {
+      minutelyCache = null
+    }
     if (minutelyCache) {
       setChartData(minutelyCache)
     }
 
     const fetchData = () => {
-      fetch("/api/charts/minutely?limit=60")
+      fetch(`/api/charts/minutely?limit=60&hostname=${hostname}`)
         .then(res => res.json())
         .then((data) => {
           if (data && typeof data === "object" && data.error === "Rate limit exceeded") {
@@ -39,6 +45,7 @@ export function MinutelyCharts() {
           setRateLimitError(false)
           minutelyCache = data
           minutelyCacheUpdatedAt = Date.now()
+          minutelyCachedHostname = hostname
           setChartData(data)
         })
     }
@@ -48,7 +55,7 @@ export function MinutelyCharts() {
     }
     const interval = setInterval(fetchData, 60000) // 60,000 ms = 1 minute
     return () => clearInterval(interval)
-  }, [])
+  }, [hostname])
 
 
   if (rateLimitError) {
