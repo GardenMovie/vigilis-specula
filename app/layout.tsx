@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono, Inter } from "next/font/google"
+import { Geist, Geist_Mono, Inter, Alex_Brush } from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/shared/themeProvider"
@@ -6,6 +6,8 @@ import { HostnameProvider } from "@/components/shared/hostnameProvider"
 import { cn } from "@/lib/utils";
 
 const geistHeading = Geist({subsets:['latin'],variable:'--font-heading'});
+
+const alexBrush = Alex_Brush({ subsets: ['latin'], weight: '400', variable: '--font-alex-brush' });
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'})
 
@@ -23,7 +25,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", inter.variable, geistHeading.variable)}
+      className={cn("antialiased", fontMono.variable, "font-sans", inter.variable, geistHeading.variable, alexBrush.variable)}
     >
       <body>
         <HostnameProvider>
