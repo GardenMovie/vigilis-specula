@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     const client = await getClient()
     const db = client.db("Metrics")
     const coll = db.collection("hardwareDay")
-    const docs = await coll.find({"metadata.hostname": hostname}).sort({ timestamp: -1 }).limit(limit).toArray()
+    const docs = await coll.find({ "metadata.hostname": hostname, timestamp: { $lte: new Date() } }).sort({ timestamp: -1 }).limit(limit).toArray()
 
     const result = docs.map((d: any) => {
       const ts = d.timestamp
