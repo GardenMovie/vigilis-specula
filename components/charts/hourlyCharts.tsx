@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import MultiLineChart from "./multiLineChart"
 import TooMany429 from "@/components/shared/errors/tooMany429"
 import { useHostname } from "@/components/shared/hostnameProvider"
+import { invalidateCacheIfVersionChanged } from "@/components/shared/cacheVersion"
 
 export const description = "A multiple line chart for hourly data"
 
@@ -24,6 +25,7 @@ const HOURLY_CACHE_MAX_AGE_MS = 60 * 60 * 1000
 
 function readHourlyCache(hostname: string): { data: HourlyData; updatedAt: number } | null {
   try {
+    invalidateCacheIfVersionChanged()
     const raw = localStorage.getItem(`hourly_cache_${hostname}`)
     if (!raw) return null
     return JSON.parse(raw)

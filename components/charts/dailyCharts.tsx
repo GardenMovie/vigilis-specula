@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import LineChartClient from "./multiLineChart"
 import TooMany429 from "@/components/shared/errors/tooMany429"
 import { useHostname } from "@/components/shared/hostnameProvider"
+import { invalidateCacheIfVersionChanged } from "@/components/shared/cacheVersion"
 
 export const description = "A multiple line chart for daily data"
 
@@ -24,6 +25,7 @@ const DAILY_CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000
 
 function readDailyCache(hostname: string): { data: DailyData; updatedAt: number } | null {
   try {
+    invalidateCacheIfVersionChanged()
     const raw = localStorage.getItem(`daily_cache_${hostname}`)
     if (!raw) return null
     return JSON.parse(raw)

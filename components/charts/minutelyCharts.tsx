@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import SingleLineChart from "./singleLineChart"
 import TooMany429 from "@/components/shared/errors/tooMany429"
 import { useHostname } from "@/components/shared/hostnameProvider"
+import { invalidateCacheIfVersionChanged } from "@/components/shared/cacheVersion"
 
 export const description = "A multiple line chart"
 
@@ -19,6 +20,7 @@ const CACHE_MAX_AGE_MS = 60 * 1000
 
 function readMinutelyCache(hostname: string): { data: MinutelyData; updatedAt: number } | null {
   try {
+    invalidateCacheIfVersionChanged()
     const raw = localStorage.getItem(`minutely_cache_${hostname}`)
     if (!raw) return null
     return JSON.parse(raw)

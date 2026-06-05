@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react"
 import TooMany429 from "../shared/errors/tooMany429"
 import { useHostname } from "../shared/hostnameProvider"
+import { invalidateCacheIfVersionChanged } from "../shared/cacheVersion"
 import { Monitor, MemoryStick, HardDrive, Cpu, Gpu, ArrowLeftRight } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -13,6 +14,7 @@ const SPECS_CACHE_MAX_AGE_MS = 60 * 60 * 1000 * 24 * 10
 
 function readSpecsCache(hostname: string): { data: specsData; updatedAt: number } | null {
   try {
+    invalidateCacheIfVersionChanged()
     const raw = localStorage.getItem(`specs_cache_${hostname}`)
     if (!raw) return null
     return JSON.parse(raw)
@@ -75,7 +77,7 @@ export function Specs() {
   }, [hostname])
 
   return (
-    <div className="w-full aspect-5/1:md mb-6 grid md:grid-cols-3 gap-3">
+    <div id="specs" className="w-full aspect-5/1:md mb-6 grid md:grid-cols-3 gap-3">
       <Card className="relative col-span-2 row-span-1 md:col-span-1 md:row-span-2 cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors" onClick={() => setSwitcherOpen(true)}>
         <span className="absolute top-3 right-3 text-xs font-medium text-blue-500 flex items-center gap-1"><ArrowLeftRight className="w-3 h-3" />Switch host</span>
         <CardContent className="flex flex-col items-center flex-1 justify-center">
