@@ -15,10 +15,21 @@ type MinutelyData = {
   ping: MetricPoint[]
 }
 
-let minutelyCache: MinutelyData | null = null
-let minutelyCacheUpdatedAt = 0
-let minutelyCachedHostname = ""
 const CACHE_MAX_AGE_MS = 60 * 1000
+
+function readMinutelyCache(hostname: string): { data: MinutelyData; updatedAt: number } | null {
+  try {
+    const raw = localStorage.getItem(`minutely_cache_${hostname}`)
+    if (!raw) return null
+    return JSON.parse(raw)
+  } catch { return null }
+}
+
+function writeMinutelyCache(hostname: string, data: MinutelyData) {
+  try {
+    localStorage.setItem(`minutely_cache_${hostname}`, JSON.stringify({ data, updatedAt: Date.now() }))
+  } catch {}
+}
 
 export function MinutelyCharts() {
   const { hostname } = useHostname()
@@ -26,11 +37,9 @@ export function MinutelyCharts() {
   const [rateLimitError, setRateLimitError] = useState(false)
 
   useEffect(() => {
-    if (hostname !== minutelyCachedHostname) {
-      minutelyCache = null
-    }
-    if (minutelyCache) {
-      setChartData(minutelyCache)
+    const cached = readMinutelyCache(hostname)
+    if (cached) {
+      setChartData(cached.data)
     }
 
     const fetchData = () => {
@@ -43,13 +52,11 @@ export function MinutelyCharts() {
             return
           }
           setRateLimitError(false)
-          minutelyCache = data
-          minutelyCacheUpdatedAt = Date.now()
-          minutelyCachedHostname = hostname
+          writeMinutelyCache(hostname, data)
           setChartData(data)
         })
     }
-    const shouldFetch = !minutelyCache || Date.now() - minutelyCacheUpdatedAt >= CACHE_MAX_AGE_MS
+    const shouldFetch = !cached || Date.now() - cached.updatedAt >= CACHE_MAX_AGE_MS
     if (shouldFetch) {
       fetchData()
     }

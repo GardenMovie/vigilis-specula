@@ -20,11 +20,21 @@ type DailyData = {
   ping: MetricPoint[];
   };
 
-let dailyCache: DailyData | null = null
-let dailyCacheUpdatedAt = 0
-let dailyCachedHostname = ""
 const DAILY_CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000
 
+function readDailyCache(hostname: string): { data: DailyData; updatedAt: number } | null {
+  try {
+    const raw = localStorage.getItem(`daily_cache_${hostname}`)
+    if (!raw) return null
+    return JSON.parse(raw)
+  } catch { return null }
+}
+
+function writeDailyCache(hostname: string, data: DailyData) {
+  try {
+    localStorage.setItem(`daily_cache_${hostname}`, JSON.stringify({ data, updatedAt: Date.now() }))
+  } catch {}
+}
 
 export function DailyCharts() {
   const { hostname } = useHostname()
@@ -32,11 +42,9 @@ export function DailyCharts() {
   const [rateLimitError, setRateLimitError] = useState(false)
 
   useEffect(() => {
-    if (hostname !== dailyCachedHostname) {
-      dailyCache = null
-    }
-    if (dailyCache) {
-      setChartData(dailyCache)
+    const cached = readDailyCache(hostname)
+    if (cached) {
+      setChartData(cached.data)
     }
 
     const fetchData = () => {
@@ -50,7 +58,6 @@ export function DailyCharts() {
           }
           setRateLimitError(false)
           if (!Array.isArray(data)) return
-          // Transform the array of objects into arrays for each metric
           const metrics: DailyData = {
             cpu: [],
             ram: [],
@@ -63,13 +70,11 @@ export function DailyCharts() {
             metrics.disk.push({ ts: d.ts, avg: d.disk, min: d.minDisk ?? undefined, max: d.maxDisk ?? undefined })
             metrics.ping.push({ ts: d.ts, avg: d.avgPing, min: d.minPing ?? undefined, max: d.maxPing ?? undefined })
           })
-          dailyCache = metrics
-          dailyCacheUpdatedAt = Date.now()
-          dailyCachedHostname = hostname
+          writeDailyCache(hostname, metrics)
           setChartData(metrics)
         })
     }
-    const shouldFetch = !dailyCache || Date.now() - dailyCacheUpdatedAt >= DAILY_CACHE_MAX_AGE_MS
+    const shouldFetch = !cached || Date.now() - cached.updatedAt >= DAILY_CACHE_MAX_AGE_MS
     if (shouldFetch) {
       fetchData()
     }

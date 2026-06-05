@@ -20,10 +20,21 @@ type HourlyData = {
   ping: MetricPoint[];
 };
 
-let hourlyCache: HourlyData | null = null
-let hourlyCacheUpdatedAt = 0
-let hourlyCachedHostname = ""
 const HOURLY_CACHE_MAX_AGE_MS = 60 * 60 * 1000
+
+function readHourlyCache(hostname: string): { data: HourlyData; updatedAt: number } | null {
+  try {
+    const raw = localStorage.getItem(`hourly_cache_${hostname}`)
+    if (!raw) return null
+    return JSON.parse(raw)
+  } catch { return null }
+}
+
+function writeHourlyCache(hostname: string, data: HourlyData) {
+  try {
+    localStorage.setItem(`hourly_cache_${hostname}`, JSON.stringify({ data, updatedAt: Date.now() }))
+  } catch {}
+}
 
 export function HourlyCharts() {
   const { hostname } = useHostname()
@@ -31,11 +42,9 @@ export function HourlyCharts() {
   const [rateLimitError, setRateLimitError] = useState(false)
 
   useEffect(() => {
-    if (hostname !== hourlyCachedHostname) {
-      hourlyCache = null
-    }
-    if (hourlyCache) {
-      setChartData(hourlyCache)
+    const cached = readHourlyCache(hostname)
+    if (cached) {
+      setChartData(cached.data)
     }
 
     const fetchData = () => {
@@ -49,7 +58,6 @@ export function HourlyCharts() {
           }
           setRateLimitError(false)
           if (!Array.isArray(data)) return
-          // Transform the array of objects into arrays for each metric
           const metrics: HourlyData = {
             cpu: [],
             ram: [],
@@ -62,13 +70,11 @@ export function HourlyCharts() {
             metrics.disk.push({ ts: d.ts, avg: d.disk, min: d.minDisk ?? undefined, max: d.maxDisk ?? undefined })
             metrics.ping.push({ ts: d.ts, avg: d.avgPing, min: d.minPing ?? undefined, max: d.maxPing ?? undefined })
           })
-          hourlyCache = metrics
-          hourlyCacheUpdatedAt = Date.now()
-          hourlyCachedHostname = hostname
+          writeHourlyCache(hostname, metrics)
           setChartData(metrics)
         })
     }
-    const shouldFetch = !hourlyCache || Date.now() - hourlyCacheUpdatedAt >= HOURLY_CACHE_MAX_AGE_MS
+    const shouldFetch = !cached || Date.now() - cached.updatedAt >= HOURLY_CACHE_MAX_AGE_MS
     if (shouldFetch) {
       fetchData()
     }

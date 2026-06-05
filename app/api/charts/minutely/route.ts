@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     const client = await getClient()
     const db = client.db("Metrics")
     const coll = db.collection("hardwareMin")
-    const docs = await coll.find({"metadata.hostname": hostname}).sort({ timestamp: -1 }).limit(limit).toArray()
+    const docs = await coll.find({"metadata.hostname": hostname, timestamp:{$lt:new Date()}}).sort({ timestamp: -1 }).limit(limit).toArray()
 
     // Prepare 4 arrays for each metric
     type MetricPoint = { ts: number | null, value: number }
