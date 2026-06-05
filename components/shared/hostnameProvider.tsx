@@ -8,12 +8,12 @@ type HostnameContextType = {
 }
 
 const HostnameContext = createContext<HostnameContextType>({
-  hostname: "heweyDeb",
+  hostname: "hewey-deb",
   setHostname: () => {},
 })
 
 export function HostnameProvider({ children }: { children: React.ReactNode }) {
-  const [hostname, setHostname] = useState("heweyDeb")
+  const [hostname, setHostname] = useState("hewey-deb")
   return (
     <HostnameContext.Provider value={{ hostname, setHostname }}>
       {children}
