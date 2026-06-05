@@ -6,10 +6,22 @@ import { Monitor, MemoryStick, HardDrive, Cpu, Gpu, ArrowLeftRight } from "lucid
 import { Card, CardContent } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
-const HOSTS = ["heweyDeb", "bob-arch"]
-
-
 const SPECS_CACHE_MAX_AGE_MS = 60 * 60 * 1000 * 24 * 10
+const HOSTS_LIST_CACHE_MAX_AGE_MS = 60 * 60 * 1000 * 24
+
+function readHostsListCache(): { data: string[]; updatedAt: number } | null {
+  try {
+    const raw = localStorage.getItem("hosts_list_cache")
+    if (!raw) return null
+    return JSON.parse(raw)
+  } catch { return null }
+}
+
+function writeHostsListCache(data: string[]) {
+  try {
+    localStorage.setItem("hosts_list_cache", JSON.stringify({ data, updatedAt: Date.now() }))
+  } catch {}
+}
 
 function readSpecsCache(hostname: string): { data: specsData; updatedAt: number } | null {
   try {
@@ -39,6 +51,22 @@ export function Specs() {
   const [rateLimitError, setRateLimitError] = useState(false)
   const [data, setData] = useState<any>(null)
   const [switcherOpen, setSwitcherOpen] = useState(false)
+  const [hosts, setHosts] = useState<string[]>(() => readHostsListCache()?.data ?? [])
+
+  useEffect(() => {
+    const cached = readHostsListCache()
+    if (!cached || Date.now() - cached.updatedAt >= HOSTS_LIST_CACHE_MAX_AGE_MS) {
+      fetch("/api/hosts/list")
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data)) {
+            writeHostsListCache(data)
+            setHosts(data)
+          }
+        })
+        .catch(() => {})
+    }
+  }, [])
 
   useEffect(() => {
     const cached = readSpecsCache(hostname)
@@ -91,7 +119,7 @@ export function Specs() {
             <DialogDescription className="text-center">Select a host to view its stats</DialogDescription>
           </DialogHeader>
           <div className="flex flex-row gap-3">
-            {HOSTS.map(h => (
+            {hosts.map(h => (
               <button
                 key={h}
                 onClick={() => { setHostname(h); setSwitcherOpen(false) }}
