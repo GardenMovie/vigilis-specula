@@ -1,6 +1,14 @@
 import { SectionHeader } from "@/components/sections/header"
 import { Server, Database, ArrowUpRight, RefreshCw, Terminal, Globe, BarChart2 } from "lucide-react"
 
+const accent = {
+  lime: "text-lime-500",
+  amber: "text-amber-500",
+  emerald: "text-emerald-500",
+  cyan: "text-cyan-500",
+  blue: "text-blue-500"
+}
+
 export default function AboutPage() {
   return (
     <div>
@@ -11,7 +19,7 @@ export default function AboutPage() {
         <div className="space-y-3 border-b border-zinc-200 dark:border-zinc-800 pb-6">
           <h1 className="text-6xl text-zinc-900 dark:text-zinc-100 leading-none flex items-baseline gap-2">
             <span className="text-4xl">What is</span>
-            <span style={{ fontFamily: "var(--font-alex-brush)" }}>Vigilis</span>
+            <span className="text-blue-500" style={{ fontFamily: "var(--font-alex-brush)" }}>Vigilis</span>
           </h1>
           <p className="text-muted-foreground leading-relaxed max-w-prose">
             A personal homelab monitoring dashboard. It tracks CPU, memory, disk, and network stats
@@ -23,7 +31,7 @@ export default function AboutPage() {
         </div>
 
         {/* Why it's built this way */}
-        <div className="space-y-3 pl-4 border-l-2 border-zinc-300 dark:border-zinc-700">
+        <div className="space-y-3 pl-4 border-l-2 border-amber-400 dark:border-amber-600">
           <h2 className="text-2xl font-semibold tracking-tight">Why it's built this way</h2>
           <p className="text-muted-foreground leading-relaxed">
             My homelab isn't reliably reachable from the outside. Instead of the dashboard pulling data from the servers,
@@ -38,13 +46,13 @@ export default function AboutPage() {
         </div>
 
         {/* Data pipeline */}
-        <div className="space-y-4 pl-4 border-l-2 border-zinc-300 dark:border-zinc-700">
+        <div className="space-y-4 pl-4 border-l-2 border-emerald-400 dark:border-emerald-600">
           <h2 className="text-2xl font-semibold tracking-tight">Data pipeline</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-0">
 
             <div className="rounded-l-lg border border-zinc-200 dark:border-zinc-800 p-4 space-y-2 relative">
               <div className="flex items-center gap-2 text-sm font-medium">
-                <RefreshCw className="w-4 h-4 animate-spin [animation-duration:3s]" />
+                <RefreshCw className={`w-4 h-4 animate-spin [animation-duration:3s] ${accent.lime}`} />
                 Raw (minutely)
               </div>
               <p className="text-sm text-muted-foreground">
@@ -57,7 +65,7 @@ export default function AboutPage() {
 
             <div className="border-y border-zinc-200 dark:border-zinc-800 p-4 space-y-2 relative sm:border sm:border-l-0 sm:border-r-0">
               <div className="flex items-center gap-2 text-sm font-medium">
-                <Database className="w-4 h-4" />
+                <Database className={`w-4 h-4 ${accent.amber}`} />
                 Hourly rollups
               </div>
               <p className="text-sm text-muted-foreground">
@@ -70,7 +78,7 @@ export default function AboutPage() {
 
             <div className="rounded-r-lg border border-zinc-200 dark:border-zinc-800 p-4 space-y-2">
               <div className="flex items-center gap-2 text-sm font-medium">
-                <BarChart2 className="w-4 h-4" />
+                <BarChart2 className={`w-4 h-4 ${accent.emerald}`} />
                 Daily rollups
               </div>
               <p className="text-sm text-muted-foreground">
@@ -86,32 +94,32 @@ export default function AboutPage() {
         </div>
 
         {/* Stack */}
-        <div className="space-y-4 pl-4 border-l-2 border-zinc-300 dark:border-zinc-700">
+        <div className="space-y-4 pl-4 border-l-2 border-cyan-400 dark:border-cyan-600">
           <h2 className="text-2xl font-semibold tracking-tight">Stack</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="flex items-start gap-3 rounded-lg border border-zinc-200 dark:border-zinc-800 p-3 bg-zinc-50 dark:bg-zinc-900/50">
-              <Terminal className="w-4 h-4 mt-0.5 shrink-0 text-muted-foreground" />
+              <Terminal className={`w-4 h-4 mt-0.5 shrink-0 ${accent.lime}`} />
               <div>
                 <p className="text-sm font-medium">Collection</p>
                 <p className="text-sm text-muted-foreground">Shell scripts on each host, pushing to MongoDB Atlas</p>
               </div>
             </div>
             <div className="flex items-start gap-3 rounded-lg border border-zinc-200 dark:border-zinc-800 p-3 bg-zinc-50 dark:bg-zinc-900/50">
-              <Database className="w-4 h-4 mt-0.5 shrink-0 text-muted-foreground" />
+              <Database className={`w-4 h-4 mt-0.5 shrink-0 ${accent.amber}`} />
               <div>
                 <p className="text-sm font-medium">Database</p>
                 <p className="text-sm text-muted-foreground">MongoDB Atlas, time-series collections with TTL indexes for auto-cleanup</p>
               </div>
             </div>
             <div className="flex items-start gap-3 rounded-lg border border-zinc-200 dark:border-zinc-800 p-3 bg-zinc-50 dark:bg-zinc-900/50">
-              <Server className="w-4 h-4 mt-0.5 shrink-0 text-muted-foreground" />
+              <Server className={`w-4 h-4 mt-0.5 shrink-0 ${accent.emerald}`} />
               <div>
                 <p className="text-sm font-medium">API</p>
                 <p className="text-sm text-muted-foreground">Next.js API routes, keeping MongoDB credentials server-side</p>
               </div>
             </div>
             <div className="flex items-start gap-3 rounded-lg border border-zinc-200 dark:border-zinc-800 p-3 bg-zinc-50 dark:bg-zinc-900/50">
-              <Globe className="w-4 h-4 mt-0.5 shrink-0 text-muted-foreground" />
+              <Globe className={`w-4 h-4 mt-0.5 shrink-0 ${accent.cyan}`} />
               <div>
                 <p className="text-sm font-medium">Frontend</p>
                 <p className="text-sm text-muted-foreground">Next.js + Tailwind + Recharts</p>
@@ -121,7 +129,7 @@ export default function AboutPage() {
         </div>
 
         {/* Why I built it */}
-        <div className="space-y-3 pl-4 border-l-2 border-zinc-300 dark:border-zinc-700 pb-4">
+        <div className="space-y-3 pl-4 border-l-2 border-lime-400 dark:border-lime-600 pb-4">
           <h2 className="text-2xl font-semibold tracking-tight">Why I built it</h2>
           <p className="text-muted-foreground leading-relaxed">
             Part curiosity, part learning. I wanted experience with a real NoSQL time-series workload, not a tutorial one.
