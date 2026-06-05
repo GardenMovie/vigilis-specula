@@ -10,10 +10,12 @@ import { ButtonGroup } from "@/components/ui/button-group"
 
 export default function Page() {
   return (
+    <div>
+    <SectionHeader />
     <div className="md:w-[60%] mx-auto p-4">
-      <SectionHeader />
       <Specs />
       <ChartsSection />
+    </div>
     </div>
   )
 }
