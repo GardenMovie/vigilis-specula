@@ -1,12 +1,13 @@
 import { SectionHeader } from "@/components/sections/header"
-import { Server, Database, ArrowUpRight, RefreshCw, Terminal, Globe, BarChart2 } from "lucide-react"
+import { Server, Database, ArrowUpRight, RefreshCw, Terminal, Globe, BarChart2, Link2 } from "lucide-react"
 
 const accent = {
   lime: "text-lime-500",
   amber: "text-amber-500",
   emerald: "text-emerald-500",
   cyan: "text-cyan-500",
-  blue: "text-blue-500"
+  blue: "text-blue-500",
+  indigo: "text-indigo-500"
 }
 
 export default function AboutPage() {
@@ -22,8 +23,8 @@ export default function AboutPage() {
             <span className="text-blue-500" style={{ fontFamily: "var(--font-alex-brush)" }}>Vigilis</span>
           </h1>
           <p className="text-muted-foreground leading-relaxed max-w-prose">
-            A personal homelab monitoring dashboard. It tracks CPU, memory, disk, and network stats
-            from my home servers and surfaces them here, in real time.
+            A server monitoring dashboard. It tracks CPU, memory, disk, and network stats from any
+            machine running the collector and surfaces them here, in real time.
           </p>
           <p className="text-muted-foreground leading-relaxed">
             The name comes from Latin: <span className="italic">vigilis</span>, watchman.
@@ -34,14 +35,13 @@ export default function AboutPage() {
         <div className="space-y-3 pl-4 border-l-2 border-amber-400 dark:border-amber-600">
           <h2 className="text-2xl font-semibold tracking-tight">Why it's built this way</h2>
           <p className="text-muted-foreground leading-relaxed">
-            My homelab isn't reliably reachable from the outside. Instead of the dashboard pulling data from the servers,
-            the servers push metrics out on a schedule. That flips the usual model: outbound traffic is always possible
-            even when inbound isn't.
+            My homelab isn't reliably reachable from the outside. Instead of the dashboard pulling data from the server,
+            the server pushes metrics out on a schedule.
           </p>
           <p className="text-muted-foreground leading-relaxed">
             I deliberately picked MongoDB over a relational DB here. I already have a SQL project, and I wanted to work with
-            a pure document store. MongoDB's time-series collections are a legitimate fit for this use case:
-            each metric reading is just a timestamped document.
+            a pure document store. MongoDB's time-series collections are a great fit for this use case:
+            the data is incremental and rarely edited.
           </p>
         </div>
 
@@ -69,7 +69,7 @@ export default function AboutPage() {
                 Hourly rollups
               </div>
               <p className="text-sm text-muted-foreground">
-                Raw documents are aggregated into hourly summaries: avg and max per metric. Kept for 30 days.
+                Raw documents are aggregated into hourly summaries: avg, min and max per metric. Kept for 30 days.
               </p>
               <div className="hidden sm:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 w-6 h-6 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 items-center justify-center">
                 <ArrowUpRight className="w-3 h-3 text-muted-foreground" />
@@ -82,7 +82,7 @@ export default function AboutPage() {
                 Daily rollups
               </div>
               <p className="text-sm text-muted-foreground">
-                Hourly rollups collapse into daily summaries. Long-term storage, you can see months of history at a glance.
+                Hourly rollups collapse into daily summaries. Long-term storage, so you can see months of history at a glance.
               </p>
             </div>
 
@@ -101,7 +101,7 @@ export default function AboutPage() {
               <Terminal className={`w-4 h-4 mt-0.5 shrink-0 ${accent.lime}`} />
               <div>
                 <p className="text-sm font-medium">Collection</p>
-                <p className="text-sm text-muted-foreground">Systemd service runs a python script that collects and sends metrics to the database</p>
+                <p className="text-sm text-muted-foreground">On linux runs through a Systemd service that uses a python script to collect and sends metrics to the database</p>
               </div>
             </div>
             <div className="flex items-start gap-3 rounded-lg border border-zinc-200 dark:border-zinc-800 p-3 bg-zinc-50 dark:bg-zinc-900/50">
@@ -135,6 +135,24 @@ export default function AboutPage() {
             Part curiosity, part learning. I wanted experience with a real NoSQL time-series workload, not a tutorial one.
             Running it against actual infrastructure means the data is real and the edge cases are real.
           </p>
+        </div>
+
+        {/* More on LinkedIn */}
+        <div className="space-y-3 pl-4 border-l-2 border-indigo-400 dark:border-indigo-600">
+          <h2 className="text-2xl font-semibold tracking-tight">More on this</h2>
+          <p className="text-muted-foreground leading-relaxed">
+            Want to learn more about the decisions behind this project? I posted about it on LinkedIn.
+          </p>
+          <a
+            href="https://www.linkedin.com/in/dody-gallerani"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`inline-flex items-center gap-2 text-sm font-medium ${accent.indigo} hover:underline underline-offset-2`}
+          >
+            <Link2 className="w-4 h-4" />
+            Find me on LinkedIn
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </a>
         </div>
 
       </div>
