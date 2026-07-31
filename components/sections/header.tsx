@@ -1,20 +1,40 @@
 import { HelpCircle } from "lucide-react"
-import Link from "next/link"
+
+import { Button } from "@/components/ui/button"
 
 export function SectionHeader() {
   return (
-    <div className="sticky top-0 z-50 w-full bg-background/30 backdrop-blur border-b border-zinc-200 dark:border-zinc-800">
-      <div className="md:w-[60%] mx-auto px-4 py-2 flex items-stretch justify-between">
-        <Link href="/" className="inline-flex items-center px-4 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/80 dark:bg-zinc-900/80 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
-          <h1 className="text-3xl text-zinc-900 hover:text-blue-600 dark:text-zinc-100 whitespace-nowrap leading-none" style={{ fontFamily: 'var(--font-alex-brush)' }}>
+    <header className="sticky top-0 z-50 w-full border-b bg-background/30 backdrop-blur">
+      <nav className="flex md:w-[60%] mx-auto h-14 py-2.5 px-4 items-center justify-between">
+        <Button
+          variant="outline"
+          size="icon"
+          asChild
+          className="w-auto px-3 h-full hover:text-blue-500"
+          aria-label="Home"
+        >
+          <a
+            href="/"
+            className="text-muted-foreground flex items-center"
+            style={{ fontFamily: "var(--font-alex-brush)", fontSize: "1.6rem" }}
+            title="Home"
+          >
             Vigilis
-          </h1>
-        </Link>
-        <Link href="/about" className="text-md font-normal inline-flex items-center gap-1.5 px-4 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 bg-white/80 dark:bg-zinc-900/80 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
-          About
-          <HelpCircle className="w-4 h-4" />
-        </Link>
-      </div>
-    </div>
+          </a>
+        </Button>
+        <Button
+          variant="outline"
+          asChild
+          className="w-auto px-3 h-full gap-1.5"
+        >
+          <a href="/about"
+            className="text-muted-foreground hover:text-orange-400 aspect-square"
+            style={{ fontSize: "1.0rem"}}
+            title="About">
+            <HelpCircle className="size-4" />
+          </a>
+        </Button>
+      </nav>
+    </header>
   )
 }
