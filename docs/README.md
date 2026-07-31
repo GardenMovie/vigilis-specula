@@ -2,7 +2,7 @@
 
 A Next.js dashboard for visualizing server/host metrics (CPU, RAM, Disk, Ping) over time, with interactive charts and host hardware specs pulled from MongoDB.
 
-![Homepage](images/homepage.png)
+![Homepage](images/homepageCut.png)
 
 ## Features
 
