@@ -1,4 +1,4 @@
-# Vigilis Specula — Monitoring Dashboard
+# Vigilis Specula | Monitoring Dashboard
 
 A Next.js dashboard for visualizing server/host metrics (CPU, RAM, Disk, Ping) over time, with interactive charts and host hardware specs pulled from MongoDB.
 
@@ -11,7 +11,7 @@ A Next.js dashboard for visualizing server/host metrics (CPU, RAM, Disk, Ping) o
 - Host specs panel (CPU, GPU, RAM, disk) sourced from MongoDB
 - Cache-versioning support so hardware/spec changes invalidate stale client caches
 - Rate-limited API routes (`next-rate-limit`)
-- Dark/light theming via `next-themes`, UI primitives via Radix/shadcn
+- UI primitives via Radix/shadcn
 
 ## Tech Stack
 
