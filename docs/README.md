@@ -51,10 +51,9 @@ lib/
    ```bash
    npm install
    ```
-2. Create a `.env.local` file in the project root with:
-   ```
-   MONGODB_URI="<your MongoDB connection string>"
-   NEXT_PUBLIC_CACHE_VERSION=<cache version string>
+2. Copy `.env.local.example` to `.env.local` and fill in your values:
+   ```bash
+   cp .env.local.example .env.local
    ```
 3. Run the dev server:
    ```bash
