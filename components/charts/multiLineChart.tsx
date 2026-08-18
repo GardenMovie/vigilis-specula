@@ -53,13 +53,15 @@ export default function MultiLineChart({ chartData, title = "Metric Usage", desc
     .filter((d) => d.ts != null)
     .sort((a, b) => (a.ts as number) - (b.ts as number))
 
+  const isDay = tickInterval === "day"
+
   // Generate an array of ticks (hourly or daily) between dataMin and dataMax
   let ticks: number[] = [];
   if (data.length > 0) {
     const min = data[0].ts as number;
     const max = data[data.length - 1].ts as number;
     const start = new Date(min);
-    if (tickInterval === "day") {
+    if (isDay) {
       start.setHours(0, 0, 0, 0);
       let t = start.getTime();
       while (t <= max) {
@@ -87,23 +89,24 @@ export default function MultiLineChart({ chartData, title = "Metric Usage", desc
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}  className="aspect-3/1 md:aspect-5/1 w-full">
-            <LineChart accessibilityLayer data={data} margin={{ left: -20, right: 12 }}>
+            <LineChart accessibilityLayer data={data} margin={{ left: -20, right: 12, bottom: isDay ? 16 : 0 }}>
               <CartesianGrid vertical={false} strokeDasharray="3 3" />
               <XAxis
                 dataKey="ts"
                 type="number"
                 tickLine={true}
                 axisLine={true}
-                tickMargin={8}
+                tickMargin={isDay ? 6 : 8}
+                interval={0}
+                height={isDay ? 44 : undefined}
                 domain={["dataMin", "dataMax"]}
                 ticks={ticks}
                 tickFormatter={(t) => {
                   const date = new Date(Number(t));
-                  if (tickInterval === "day") {
-                    return date.toLocaleDateString([], {
-                      month: "short",
-                      day: "2-digit"
-                    });
+                  if (isDay) {
+                    const dd = String(date.getDate()).padStart(2, "0");
+                    const mm = String(date.getMonth() + 1).padStart(2, "0");
+                    return `${dd}/${mm}`;
                   } else {
                     return date.toLocaleTimeString([], {
                       hour12: false,
@@ -113,6 +116,9 @@ export default function MultiLineChart({ chartData, title = "Metric Usage", desc
                   }
                 }}
                 minTickGap={0}
+                tick={isDay
+                  ? { fontSize: 10, angle: -90, textAnchor: "end", dy: 4 }
+                  : { fontSize: 12 }}
               />
               <YAxis
                 domain={[

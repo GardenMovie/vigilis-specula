@@ -50,7 +50,7 @@ export function DailyCharts() {
     }
 
     const fetchData = () => {
-      fetch(`/api/charts/daily?limit=30&hostname=${hostname}`)
+      fetch(`/api/charts/daily?limit=28&hostname=${hostname}`)
         .then(res => res.json())
         .then((data) => {
           if (data && typeof data === "object" && data.error === "Rate limit exceeded") {
