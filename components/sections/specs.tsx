@@ -7,7 +7,7 @@ import { Monitor, MemoryStick, HardDrive, Cpu, Gpu, ArrowLeftRight } from "lucid
 import { Card, CardContent } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
-const HOSTS = ["hewey-deb"]
+const HOSTS = ["hewey-deb", "bob-arch", 'breviare-ec2']
 
 
 const SPECS_CACHE_MAX_AGE_MS = 60 * 60 * 1000 * 24 * 10
